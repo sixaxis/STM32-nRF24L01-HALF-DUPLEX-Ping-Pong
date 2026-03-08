@@ -32,53 +32,13 @@ extern "C" {
 #include "retarget.h"
 #include  "stdio.h"
 
-/* Private includes ----------------------------------------------------------*/
-/* USER CODE BEGIN Includes */
-
-/* USER CODE END Includes */
-
-/* Exported types ------------------------------------------------------------*/
-/* USER CODE BEGIN ET */
-
-/* USER CODE END ET */
-
-/* Exported constants --------------------------------------------------------*/
-/* USER CODE BEGIN EC */
-
-/* USER CODE END EC */
-
-/* Exported macro ------------------------------------------------------------*/
-/* USER CODE BEGIN EM */
-
-/* USER CODE END EM */
-
-/* Exported functions prototypes ---------------------------------------------*/
 void Error_Handler(void);
-
-/* USER CODE BEGIN EFP */
-
-/* USER CODE END EFP */
-
-/* Private defines -----------------------------------------------------------*/
 #define NRF_CE_Pin        GPIO_PIN_6
 #define NRF_CE_GPIO_Port  GPIOB
 #define NRF_CS_Pin        GPIO_PIN_7
 #define NRF_CS_GPIO_Port  GPIOB
 #define NRF_IRQ_Pin       GPIO_PIN_8
 #define NRF_IRQ_GPIO_Port GPIOB
-#define LED_PORT          GPIOA
-#define LED_D2            GPIO_PIN_6
-#define LED_D3            GPIO_PIN_7
-
-#define LED_D3_ON  (HAL_GPIO_WritePin(LED_PORT, LED_D3, GPIO_PIN_RESET))
-#define LED_D3_OFF (HAL_GPIO_WritePin(LED_PORT, LED_D3, GPIO_PIN_SET))
-
-#define LED_D2_ON  (HAL_GPIO_WritePin(LED_PORT, LED_D2, GPIO_PIN_RESET))
-#define LED_D2_OFF (HAL_GPIO_WritePin(LED_PORT, LED_D2, GPIO_PIN_SET))
-
-/* USER CODE BEGIN Private defines */
-
-/* USER CODE END Private defines */
 
 #ifdef __cplusplus
 }

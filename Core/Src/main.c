@@ -37,26 +37,20 @@ int main(void)
   MX_SPI1_Init();
   MX_USART1_UART_Init();
   RetargetInit(&huart1);
-
-  LED_D2_OFF;
-  LED_D3_OFF;
-
-
-  uint8_t addr[5] = {0xE7, 0xE7, 0xE7, 0xE7, 0xE7};
   NRF24_Init(&nrf);
 
   if (NRF24_Check(&nrf))
   {
-      NRF24_SetAddress(&nrf, addr);
+	  uint8_t addr[5] = {0xE7, 0xE7, 0xE7, 0xE7, 0xE7};
+	  NRF24_SetAddress(&nrf, addr);
       NRF24_Mode_RX(&nrf);
       printf("NRF OK\r\n");
   }
 
-  else LED_D3_ON;
+  else  printf("NRF CHECK ERROR\r\n");
 
 
-
-  State_t current_state = STATE_WAIT_RESPONSE;
+  State_t current_state = STATE_TX;
 
   while (1)
   {
@@ -68,12 +62,12 @@ int main(void)
               NRF24_Transmit(&nrf, tx_buf);
               while(nrf_event == 0);
 
-              if (nrf_event == 2) // Успешно ушло (TX_DS)
+              if (nrf_event == 2) // sent successfully (TX_DS)
               {
                   printf("Sent OK\r\n");
                   current_state = STATE_WAIT_RESPONSE;
               }
-              else // Ошибка или таймаут
+              else // Error or timeout
               {
                   printf("TX Error\r\n");
                   current_state = STATE_TX;
@@ -83,12 +77,12 @@ int main(void)
               break;
 
               case STATE_WAIT_RESPONSE:
-              NRF24_Mode_RX(&nrf); // Включаем прием
+              NRF24_Mode_RX(&nrf); // Switching on reception
               nrf_event = 0;
               uint32_t rx_timer = HAL_GetTick();
               while(nrf_event == 0 && (HAL_GetTick() - rx_timer < 200));
 
-              if (nrf_event == 1) // Данные пришли!
+              if (nrf_event == 1) // Data received!
               {
                   NRF24_ReadPayload(&nrf, rx_buf, 32);
                   printf("Received: %s\r\n", (char*)rx_buf);
@@ -106,9 +100,8 @@ int main(void)
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
     if (GPIO_Pin == NRF_IRQ_Pin)
     {
-
     	uint8_t status = NRF24_ReadReg(&nrf, NRF24_REG_STATUS);
-    	NRF24_WriteReg(&nrf, NRF24_REG_STATUS, status & 0x70); // Сброс всех флагов
+    	NRF24_WriteReg(&nrf, NRF24_REG_STATUS, status & 0x70); // Resetting all flags
 
     	if (status & (1 << 6)) nrf_event = 1; // RX
     	if (status & (1 << 5)) nrf_event = 2; // TX
@@ -119,7 +112,6 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
     		CSN_Select(&nrf);
     		HAL_SPI_Transmit(nrf.hspi, &cmd, 1, 10);
     		CSN_Unselect(&nrf);
-    		HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_7);
     	}
 
     }
@@ -131,10 +123,8 @@ void SystemClock_Config(void)
   RCC_OscInitTypeDef RCC_OscInitStruct = {0};
   RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
 
-
   __HAL_RCC_PWR_CLK_ENABLE();
   __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE1);
-
 
   RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
   RCC_OscInitStruct.HSEState = RCC_HSE_ON;
@@ -203,7 +193,6 @@ static void MX_USART1_UART_Init(void)
     Error_Handler();
   }
 
-
 }
 
 
@@ -232,19 +221,7 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_PULLUP;
   HAL_GPIO_Init(NRF_IRQ_GPIO_Port, &GPIO_InitStruct);
 
-  GPIO_InitStruct.Pin = LED_D2 | LED_D3;
-  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
-  HAL_GPIO_Init(LED_PORT, &GPIO_InitStruct);
-
-/* USER CODE BEGIN MX_GPIO_Init_2 */
-/* USER CODE END MX_GPIO_Init_2 */
-
-  // 1. Устанавливаем приоритет (например, 5 — средний)
   HAL_NVIC_SetPriority(EXTI9_5_IRQn, 5, 0);
-
-  // 2. Разрешаем прерывание в контроллере NVIC
   HAL_NVIC_EnableIRQ(EXTI9_5_IRQn);
 }
 
