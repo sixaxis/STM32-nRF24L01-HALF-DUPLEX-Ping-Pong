@@ -1,9 +1,0 @@
-Debug/
-Release/
-*.o
-*.elf
-*.list
-*.map
-*.sh
-.gitignore
-.settings/
