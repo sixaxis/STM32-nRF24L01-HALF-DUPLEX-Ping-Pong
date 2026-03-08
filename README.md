@@ -1,6 +1,10 @@
 # STM32 nRF24L01+ Ping-Pong Driver
+!!!!*****ПЕРЕЗАГРУЗИТЕ ПЛАТУ ПЕРЕДАТЧИКА ПОСЛЕ ПРОШИВКИ*****!!!!
+
+!!!!REBOOT THE TRANSMITTER BOARD AFTER FLASHING!!!!
 
 [RU] Проект реализации приемопередатчика на базе STM32 и nRF24L01 с использованием конечного автомата (FSM) и прерываний.
+
 [EN] A project implementing a transceiver based on STM32 and nRF24L01 using a State Machine (FSM) and interrupts.
 
 ---
