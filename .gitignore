@@ -5,4 +5,5 @@ Release/
 *.list
 *.map
 *.sh
+.gitignore
 .settings/
